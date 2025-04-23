@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Tree View: Lists all Network Drive records -->
+    <record id="view_network_drive_tree" model="ir.ui.view">
+        <field name="name">network.drive.tree</field>
+        <field name="model">network.drive</field>
+        <field name="arch" type="xml">
+            <tree string="Network Drives">
+                <field name="name"/>
+                <field name="file_path"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View: Shows record details with directory contents and access rights -->
+    <record id="view_network_drive_form" model="ir.ui.view">
+        <field name="name">network.drive.form</field>
+        <field name="model">network.drive</field>
+        <field name="arch" type="xml">
+            <form string="Network Drive">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="file_path"/>
+                        <field name="is_networkdrive"/>
+                    </group>
+                    <group attrs="{'invisible': [('is_networkdrive', '!=', True)]}">
+                        <field name="driver_credential_id" attrs="{'required': [('is_networkdrive', '=', True)]}"/>
+                    </group>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_refresh_contents" type="object" class="oe_stat_button" icon="fa-refresh">
+                            Refresh Contents
+                        </button>
+                    </div>
+                    <notebook>
+                        <page string="Directory Contents">
+                            <field name="content_ids" widget="one2many_list" mode="tree">
+                                <tree string="Contents" parent="parent_id" decoration-info="item_type=='Folder'" decoration-muted="item_type=='File'" decoration-warning="display_type=='line_section'" delete="false" default_order="path, name">
+                                    <control>
+                                        <create name="add_line_control"
+                                                string="Add a line"/>
+                                        <create name="add_section_control"
+                                                string="Add a section"
+                                                context="{'default_display_type': 'line_section'}"/>
+                                    </control>
+                                    <field name="display_type" invisible="1"/>
+                                    <button name="action_expand_folder" type="object" string="Expand" icon="fa-plus" attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', True)]}"/>
+                                    <button name="action_collapse_folder" type="object" string="Collapse" icon="fa-minus" attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', False)]}"/>
+                                    <field name="item_type"/>
+                                    <button name="action_open_folder" type="object" string="Open" icon="fa-external-link" attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
+                                    <field name="name"/>
+                                    <button name="action_download" type="object" string="Download File" icon="fa-file" attrs="{'invisible': [('item_type', '!=', 'File')]}"/>
+                                    <button name="action_download" type="object" string="Download Folder" icon="fa-folder" attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
+                                    <field name="has_children" invisible="1"/>
+                                    <field name="path" attrs="{'invisible': [('display_type', '==', 'line_section')]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Access Rights">
+                            <group>
+                                <field name="allowed_user_ids" widget="many2many_tags" string="Allowed Users"/>
+                                <field name="allowed_group_ids" widget="many2many_tags" string="Allowed Groups"/>
+                            </group>
+                            <div class="oe_note">
+                                <p>Note: The Administrator group and the default admin user are always included and cannot be removed.</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action: Opens the Network Drive list view -->
+    <record id="action_network_drive" model="ir.actions.act_window">
+        <field name="name">Network Drives</field>
+        <field name="res_model">network.drive</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Main Menu with Icon -->
+    <menuitem id="menu_network_drives" name="NetworkDrives" sequence="10" web_icon="network_drives,static/description/icon.png"/>
+
+    <!-- Submenu for Network Drives -->
+    <menuitem id="sub_menu_drive_selection" name="Drive Selection" parent="menu_network_drives" action="action_network_drive" sequence="20"/>
+</odoo>

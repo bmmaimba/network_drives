@@ -1,0 +1,10 @@
+<odoo>
+    <record id="action_open_folder_server" model="ir.actions.server">
+        <field name="name">Open Folder</field>
+        <field name="model_id" ref="model_network_drive_content"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_open_folder()
+        </field>
+    </record>
+</odoo>

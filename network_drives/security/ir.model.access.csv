@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_network_drive_user,network.drive.user,model_network_drive,,1,0,0,0
+access_network_drive_admin,network.drive.admin,model_network_drive,base.group_system,1,1,1,1
+access_network_drive_content_user,network.drive.content.user,model_network_drive_content,,1,1,1,1
+access_network_drive_content_admin,network.drive.content.admin,model_network_drive_content,base.group_system,1,1,1,1
+access_driver_credential_admin,network.driver.credential,model_driver_credential,base.group_system,1,1,1,1
+access_driver_credential_user,driver.credential.user,model_driver_credential,base.group_user,1,0,0,0
