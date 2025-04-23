@@ -1,44 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Action to open the VPN Credentials list view -->
-    <record id="action_vpn_credential" model="ir.actions.act_window">
-        <field name="name">VPN Credentials</field>
-        <field name="res_model">vpn.credential</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create and manage VPN credentials here.
-            </p>
-        </field>
-    </record>
-
-    <!-- Action to open the VPN Connections list view -->
-    <record id="action_vpn_connection" model="ir.actions.act_window">
-        <field name="name">VPN Connections</field>
-        <field name="res_model">vpn.connection</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Monitor and manage VPN connections here.
-            </p>
-        </field>
-    </record>
-
-    <!-- Menu for VPN Management (if not already in vpn_views.xml) -->
-    <menuitem id="menu_vpn_management"
-              name="VPN Management"
-              parent="network_drives.menu_root"
-              sequence="20"/>
-
-    <menuitem id="menu_vpn_credential"
-              name="VPN Credentials"
-              parent="menu_vpn_management"
-              action="action_vpn_credential"
-              sequence="10"/>
-
-    <menuitem id="menu_vpn_connection"
-              name="VPN Connections"
-              parent="menu_vpn_management"
-              action="action_vpn_connection"
-              sequence="20"/>
+    <data>
+        <record id="ir_cron_monitor_vpn_connections" model="ir.cron">
+            <field name="name">Monitor VPN Connections</field>
+            <field name="model_id" ref="model_vpn_connection"/>
+            <field name="state">code</field>
+            <field name="code">model._monitor_vpn_connections()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+    </data>
 </odoo>

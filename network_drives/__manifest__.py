@@ -20,12 +20,11 @@
     'data': [
         'security/network_drive_security.xml',
         'security/ir.model.access.csv',
-        'views/menu_views.xml',
-        'views/network_drive_views.xml',
-        'views/driver_credential_views.xml',
-        'views/vpn_views.xml',
         'data/network_drive_actions.xml',
         'data/vpn_actions.xml',
+        'views/driver_credential_views.xml',
+        'views/network_drive_views.xml',
+        'views/vpn_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
