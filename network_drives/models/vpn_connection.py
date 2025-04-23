@@ -1,60 +1,32 @@
 from odoo import models, fields, api
-from ..utils.vpn_manager import VPNManager
-import logging
-
-_logger = logging.getLogger(__name__)
+import datetime
 
 class VPNConnection(models.Model):
     _name = 'vpn.connection'
-    _description = 'VPN Connection Manager'
+    _description = 'VPN Connection'
 
-    vpn_credential_id = fields.Many2one('vpn.credential', string='VPN Credential', required=True)
-    start_time = fields.Datetime(string='Connection Start Time')
-    end_time = fields.Datetime(string='Connection End Time')
+    name = fields.Char(required=True)
+    server = fields.Char(required=True)
+    domain = fields.Char()
+    username = fields.Char(required=True)
+    password = fields.Char(required=True)
+    vpn_type = fields.Selection([
+        ('sonicwall', 'SonicWall NetExtender'),
+        ('cisco', 'Cisco VPN')
+    ], required=True)
     status = fields.Selection([
-        ('active', 'Active'),
-        ('inactive', 'Inactive'),
-        ('failed', 'Failed')
-    ], default='inactive')
+        ('connected', 'Connected'),
+        ('disconnected', 'Disconnected')
+    ], default='disconnected')
+    last_check_time = fields.Datetime()
+    auto_reconnect = fields.Boolean(default=True)
 
-    def action_connect_vpn(self):
-        vpn_manager = VPNManager()
-        credential = self.vpn_credential_id
-
-        try:
-            success = vpn_manager.connect(
-                vpn_type=credential.vpn_type,
-                server=credential.server,
-                port=credential.port,
-                domain=credential.domain,
-                username=credential.username,
-                password=credential.password_encrypted  # Use decrypted password in actual implementation
-            )
-
-            if success:
-                self.write({
-                    'status': 'active',
-                    'start_time': fields.Datetime.now()
-                })
-                return True
-            else:
-                self.write({'status': 'failed'})
-                return False
-
-        except Exception as e:
-            _logger.error(f"VPN Connection failed: {str(e)}")
-            self.write({'status': 'failed'})
-            return False
-
-    def action_disconnect_vpn(self):
-        vpn_manager = VPNManager()
-        try:
-            vpn_manager.disconnect()
-            self.write({
-                'status': 'inactive',
-                'end_time': fields.Datetime.now()
-            })
-            return True
-        except Exception as e:
-            _logger.error(f"VPN Disconnection failed: {str(e)}")
-            return False
+    def _monitor_vpn_connections(self):
+        vpn_manager = self.env['utils.vpn_manager'].get_instance()
+        for connection in self.search([]):
+            status = vpn_manager.check_connection_status(connection)
+            if status != connection.status:
+                connection.status = status
+                if status == 'disconnected' and connection.auto_reconnect:
+                    connection.connect()
+            connection.last_check_time = fields.Datetime.now()
