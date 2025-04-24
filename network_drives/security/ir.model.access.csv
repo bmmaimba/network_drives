@@ -6,7 +6,7 @@ access_network_drive_content_admin,network.drive.content.admin,model_network_dri
 access_driver_credential_admin,network.driver.credential,model_driver_credential,base.group_system,1,1,1,1
 access_driver_credential_user,driver.credential.user,model_driver_credential,base.group_user,1,0,0,0
 
-access_vpn_credential_admin,vpn.credential.admin,model_vpn_credential,base.group_system,1,1,1,1
-access_vpn_credential_user,vpn.credential.user,model_vpn_credential,base.group_user,1,1,1,1
-access_vpn_connection_admin,vpn.connection.admin,model_vpn_connection,base.group_system,1,1,1,1
-access_vpn_connection_user,vpn.connection.user,model_vpn_connection,base.group_user,1,1,1,1
+access_vpn_credential_user,vpn.credential user,model_vpn_credential,base.group_user,1,0,0,0
+access_vpn_credential_manager,vpn.credential manager,model_vpn_credential,base.group_system,1,1,1,1
+access_vpn_connection_user,vpn.connection user,model_vpn_connection,base.group_user,1,0,0,0
+access_vpn_connection_manager,vpn.connection manager,model_vpn_connection,base.group_system,1,1,1,1
