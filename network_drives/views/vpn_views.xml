@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_vpn_credential_form" model="ir.ui.view">
+        <field name="name">vpn.credential.form</field>
+        <field name="model">vpn.credential</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="server"/>
+                        <field name="port"/>
+                        <field name="domain"/>
+                        <field name="username"/>
+                        <field name="password" password="True"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="view_vpn_connection_form" model="ir.ui.view">
         <field name="name">vpn.connection.form</field>
         <field name="model">vpn.connection</field>
@@ -8,18 +27,13 @@
                 <header>
                     <button name="connect" string="Connect" type="object" class="oe_highlight"/>
                     <button name="disconnect" string="Disconnect" type="object"/>
-                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="server"/>
-                        <field name="domain"/>
-                        <field name="username"/>
-                        <field name="password" password="True"/>
-                        <field name="vpn_type"/>
-                        <field name="auto_reconnect"/>
-                        <field name="last_check_time" readonly="1"/>
+                        <field name="credential_id"/>
+                        <field name="status"/>
+                        <field name="last_error"/>
                     </group>
                 </sheet>
             </form>

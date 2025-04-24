@@ -1,25 +1,29 @@
-import socket
 import subprocess
+import logging
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 class VPNManager:
-    def check_connection_status(self, connection):
-        if connection.vpn_type == 'sonicwall':
-            return self._check_sonicwall_status(connection)
-        elif connection.vpn_type == 'cisco':
-            return self._check_cisco_status(connection)
-        return 'disconnected'
-
-    def _check_sonicwall_status(self, connection):
+    def connect(self, credential):
         try:
-            sock = socket.create_connection((connection.server.split(':')[0], 4433), timeout=5)
-            sock.close()
-            return 'connected'
-        except:
-            return 'disconnected'
+            cmd = [
+                'netExtender',
+                f'{credential.server}:{credential.port}',
+                '-u', credential.username,
+                '-p', credential.password,
+                '-d', credential.domain
+            ]
+            subprocess.run(cmd, check=True)
+            return True
+        except Exception as e:
+            _logger.error(f"VPN connection failed: {str(e)}")
+            return False
 
-    def _check_cisco_status(self, connection):
+    def disconnect(self):
         try:
-            result = subprocess.run(['vpn', 'status'], capture_output=True, text=True)
-            return 'connected' if 'Connected' in result.stdout else 'disconnected'
-        except:
-            return 'disconnected'
+            subprocess.run(['netExtender', '-stop'], check=True)
+            return True
+        except Exception as e:
+            _logger.error(f"VPN disconnection failed: {str(e)}")
+            return False

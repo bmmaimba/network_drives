@@ -1,32 +1,23 @@
 from odoo import models, fields, api
-import datetime
+from odoo.exceptions import UserError
 
 class VPNConnection(models.Model):
     _name = 'vpn.connection'
     _description = 'VPN Connection'
 
     name = fields.Char(required=True)
-    server = fields.Char(required=True)
-    domain = fields.Char()
-    username = fields.Char(required=True)
-    password = fields.Char(required=True)
-    vpn_type = fields.Selection([
-        ('sonicwall', 'SonicWall NetExtender'),
-        ('cisco', 'Cisco VPN')
-    ], required=True)
+    credential_id = fields.Many2one('vpn.credential', required=True)
     status = fields.Selection([
+        ('disconnected', 'Disconnected'),
         ('connected', 'Connected'),
-        ('disconnected', 'Disconnected')
+        ('error', 'Error')
     ], default='disconnected')
-    last_check_time = fields.Datetime()
-    auto_reconnect = fields.Boolean(default=True)
-
-    def _monitor_vpn_connections(self):
+    last_error = fields.Text()
+    
+    def connect(self):
         vpn_manager = self.env['utils.vpn_manager'].get_instance()
-        for connection in self.search([]):
-            status = vpn_manager.check_connection_status(connection)
-            if status != connection.status:
-                connection.status = status
-                if status == 'disconnected' and connection.auto_reconnect:
-                    connection.connect()
-            connection.last_check_time = fields.Datetime.now()
+        return vpn_manager.connect(self.credential_id)
+        
+    def disconnect(self):
+        vpn_manager = self.env['utils.vpn_manager'].get_instance()
+        return vpn_manager.disconnect()
