@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo import fields
 import os
 import zipfile
 import io
@@ -52,6 +53,8 @@ class NetworkDrive(models.Model):
         return super(NetworkDrive, self).write(vals)
 
     def _connect_to_share(self):
+        if self.require_vpn:
+            self._ensure_vpn_connected()
         """Internal method to establish connection"""
         for record in self:
             _logger.info("Start _connect_to_share%s:", self.name)
@@ -124,6 +127,13 @@ class NetworkDriveContent(models.Model):
     path = fields.Char(string='Path', required=False)
     item_type = fields.Selection([('File', 'File'), ('Folder', 'Folder')], string='Type', required=False)
     drive_id = fields.Many2one('network.drive', string='Drive', required=True, ondelete='cascade')
+    vpn_configuration_id = fields.Many2one('vpn.configuration', string='VPN Configuration')
+    require_vpn = fields.Boolean(default=False)
+
+    def _ensure_vpn_connected(self):
+        if self.require_vpn and self.vpn_configuration_id:
+            # Add VPN connection logic here
+            pass
     parent_id = fields.Many2one('network.drive.content', string='Parent', index=True, ondelete='cascade')
     child_ids = fields.One2many('network.drive.content', 'parent_id', string='Children')
     parent_path = fields.Char(index=True)

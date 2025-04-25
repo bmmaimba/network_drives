@@ -27,6 +27,10 @@
                     <group attrs="{'invisible': [('is_networkdrive', '!=', True)]}">
                         <field name="driver_credential_id" attrs="{'required': [('is_networkdrive', '=', True)]}"/>
                     </group>
+                    <group>
+                        <field name="require_vpn"/>
+                        <field name="vpn_configuration_id" attrs="{'required': [('require_vpn', '=', True)]}"/>
+                    </group>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_refresh_contents" type="object" class="oe_stat_button" icon="fa-refresh">
                             Refresh Contents
