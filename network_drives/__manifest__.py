@@ -9,6 +9,7 @@
     'data': [
         'views/network_drive_views.xml',
         'views/driver_credential_views.xml',
+        'views/vpn_configuration_views.xml',
         'security/ir.model.access.csv',
     ],
     "external_dependencies": {"python": [
