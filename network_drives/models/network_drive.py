@@ -1,5 +1,4 @@
 from odoo import models, fields, api
-from odoo import fields
 import os
 import zipfile
 import io
@@ -15,6 +14,8 @@ class NetworkDrive(models.Model):
     _description = 'Network Drive'
 
     name = fields.Char(string='Name', required=True)
+    require_vpn = fields.Boolean(string='Requires VPN', default=False)
+    vpn_configuration_id = fields.Many2one('vpn.configuration', string='VPN Configuration')
     file_path = fields.Char(string='File Path', required=True)
     content_ids = fields.One2many('network.drive.content', 'drive_id', string='Contents')
 
@@ -55,9 +56,9 @@ class NetworkDrive(models.Model):
         return super(NetworkDrive, self).write(vals)
 
     def _connect_to_share(self):
-        if self.require_vpn:
-            self._ensure_vpn_connected()
         """Internal method to establish connection"""
+        if self.require_vpn and self.vpn_configuration_id:
+            self.vpn_configuration_id.connect()
         for record in self:
             _logger.info("Start _connect_to_share%s:", self.name)
             try:
@@ -75,6 +76,8 @@ class NetworkDrive(models.Model):
                 # raise UserWarning(f"Connection failed: {str(e)}")
 
     def action_refresh_contents(self):
+        if self.require_vpn and self.vpn_configuration_id:
+            self.vpn_configuration_id.connect()
         _logger.info(f"Refreshing contents for drive: {self.name}")
         self.content_ids.unlink()  # Clear existing contents
         if self.file_path:
