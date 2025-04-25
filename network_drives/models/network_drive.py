@@ -23,6 +23,8 @@ class NetworkDrive(models.Model):
     allowed_group_ids = fields.Many2many('res.groups', string='Allowed Groups', help='Groups whose members can access this record.')
     is_networkdrive = fields.Boolean(string="Is Network Drives")
     driver_credential_id = fields.Many2one('driver.credential', string="Driver Credential")
+    vpn_configuration_id = fields.Many2one('vpn.configuration', string="VPN Configuration")
+    require_vpn = fields.Boolean(string="Require VPN", default=False)
 
     @api.model
     def create(self, vals):
