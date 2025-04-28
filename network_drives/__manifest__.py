@@ -7,11 +7,9 @@
     'category': 'Tools',
     'depends': ['base'],
     'data': [
-        'security/ir.model.access.csv',
         'views/network_drive_views.xml',
-        'views/driver_credential_views.xml',
-        'views/vpn_configuration_views.xml',
-        'data/network_drive_actions.xml',
+        'views/drive_credential_views.xml',
+        'security/ir.model.access.csv',
     ],
     "external_dependencies": {"python": [
         "pywin32",

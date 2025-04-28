@@ -19,31 +19,47 @@
         <field name="arch" type="xml">
             <form string="Network Drive">
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="file_path"/>
-                        <field name="is_networkdrive"/>
-                    </group>
-                    <group attrs="{'invisible': [('is_networkdrive', '!=', True)]}">
-                        <field name="driver_credential_id" attrs="{'required': [('is_networkdrive', '=', True)]}"/>
-                    </group>
-                    <group>
-                        <field name="require_vpn"/>
-                        <field name="vpn_configuration_id" attrs="{'required': [('require_vpn', '=', True)]}"/>
-                    </group>
-                    <group>
-                        <field name="require_vpn"/>
-                        <field name="vpn_configuration_id" attrs="{'required': [('require_vpn', '=', True)]}"/>
-                    </group>
+                    <!-- Header Button Box -->
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_refresh_contents" type="object" class="oe_stat_button" icon="fa-refresh">
+                        <button name="action_refresh_contents"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-refresh">
                             Refresh Contents
                         </button>
                     </div>
+
+                    <!-- Main Information -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Drive Name"/>
+                        </h1>
+                    </div>
+
+                    <!-- Basic Settings -->
+                    <group>
+                        <group>
+                            <field name="file_path" placeholder="e.g., //server/share"/>
+                            <field name="is_networkdrive"/>
+                            <field name="drive_credential_id"
+                                   attrs="{'required': [('is_networkdrive', '=', True)],'invisible': [('is_networkdrive', '!=', True)]}"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+
+                    <!-- Content and Access Rights -->
                     <notebook>
-                        <page string="Directory Contents">
+                        <page string="Directory Contents" name="directory_contents">
                             <field name="content_ids" widget="one2many_list" mode="tree">
-                                <tree string="Contents" parent="parent_id" decoration-info="item_type=='Folder'" decoration-muted="item_type=='File'" decoration-warning="display_type=='line_section'" delete="false" default_order="path, name">
+                                <tree string="Contents"
+                                      parent="parent_id"
+                                      decoration-info="item_type=='Folder'"
+                                      decoration-muted="item_type=='File'"
+                                      decoration-warning="display_type=='line_section'"
+                                      delete="false"
+                                      default_order="path, name">
                                     <control>
                                         <create name="add_line_control"
                                                 string="Add a line"/>
@@ -52,25 +68,55 @@
                                                 context="{'default_display_type': 'line_section'}"/>
                                     </control>
                                     <field name="display_type" invisible="1"/>
-                                    <button name="action_expand_folder" type="object" string="Expand" icon="fa-plus" attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', True)]}"/>
-                                    <button name="action_collapse_folder" type="object" string="Collapse" icon="fa-minus" attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', False)]}"/>
-                                    <field name="item_type"/>
-                                    <button name="action_open_folder" type="object" string="Open" icon="fa-external-link" attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
-                                    <field name="name"/>
-                                    <button name="action_download" type="object" string="Download File" icon="fa-file" attrs="{'invisible': [('item_type', '!=', 'File')]}"/>
-                                    <button name="action_download" type="object" string="Download Folder" icon="fa-folder" attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
                                     <field name="has_children" invisible="1"/>
+                                    <button name="action_expand_folder"
+                                            type="object"
+                                            string="Expand"
+                                            icon="fa-plus"
+                                            attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', True)]}"/>
+                                    <button name="action_collapse_folder"
+                                            type="object"
+                                            string="Collapse"
+                                            icon="fa-minus"
+                                            attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', False)]}"/>
+                                    <field name="item_type"/>
+                                    <field name="name"/>
                                     <field name="path" attrs="{'invisible': [('display_type', '==', 'line_section')]}"/>
+                                    <button name="action_open_folder"
+                                            type="object"
+                                            string="Open"
+                                            icon="fa-external-link"
+                                            attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
+                                    <button name="action_download"
+                                            type="object"
+                                            string="Download File"
+                                            icon="fa-file"
+                                            attrs="{'invisible': [('item_type', '!=', 'File')]}"/>
+                                    <button name="action_download"
+                                            type="object"
+                                            string="Download Folder"
+                                            icon="fa-folder"
+                                            attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
                                 </tree>
                             </field>
                         </page>
-                        <page string="Access Rights">
+                        <page string="Access Rights" name="access_rights">
                             <group>
-                                <field name="allowed_user_ids" widget="many2many_tags" string="Allowed Users"/>
-                                <field name="allowed_group_ids" widget="many2many_tags" string="Allowed Groups"/>
+                                <group>
+                                    <field name="allowed_user_ids"
+                                           widget="many2many_tags"
+                                           string="Allowed Users"
+                                           options="{'no_create': True}"/>
+                                    <field name="allowed_group_ids"
+                                           widget="many2many_tags"
+                                           string="Allowed Groups"
+                                           options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                </group>
                             </group>
-                            <div class="oe_note">
-                                <p>Note: The Administrator group and the default admin user are always included and cannot be removed.</p>
+                            <div class="alert alert-info" role="alert">
+                                <p><i class="fa fa-info-circle"/> Note: The Administrator group and the default admin user are always included and cannot be removed.</p>
                             </div>
                         </page>
                     </notebook>

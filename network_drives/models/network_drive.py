@@ -14,8 +14,6 @@ class NetworkDrive(models.Model):
     _description = 'Network Drive'
 
     name = fields.Char(string='Name', required=True)
-    require_vpn = fields.Boolean(string='Requires VPN', default=False)
-    vpn_configuration_id = fields.Many2one('vpn.configuration', string='VPN Configuration')
     file_path = fields.Char(string='File Path', required=True)
     content_ids = fields.One2many('network.drive.content', 'drive_id', string='Contents')
 
@@ -23,9 +21,7 @@ class NetworkDrive(models.Model):
     allowed_user_ids = fields.Many2many('res.users', string='Allowed Users', help='Users who can access this record.')
     allowed_group_ids = fields.Many2many('res.groups', string='Allowed Groups', help='Groups whose members can access this record.')
     is_networkdrive = fields.Boolean(string="Is Network Drives")
-    driver_credential_id = fields.Many2one('driver.credential', string="Driver Credential")
-    vpn_configuration_id = fields.Many2one('vpn.configuration', string="VPN Configuration")
-    require_vpn = fields.Boolean(string="Require VPN", default=False)
+    drive_credential_id = fields.Many2one('drive.credential', string="Drive Credentials")
 
     @api.model
     def create(self, vals):
@@ -57,17 +53,15 @@ class NetworkDrive(models.Model):
 
     def _connect_to_share(self):
         """Internal method to establish connection"""
-        if self.require_vpn and self.vpn_configuration_id:
-            self.vpn_configuration_id.connect()
         for record in self:
             _logger.info("Start _connect_to_share%s:", self.name)
             try:
-                
+
                 _logger.info(f"Initialization net_resource: {self.name}")
                 path = fr'{self.file_path}'
-                username = self.driver_credential_id.sudo().user_name  # or just "username" if not domain-based
-                password = self.driver_credential_id.sudo().password
-                
+                username = self.drive_credential_id.sudo().user_name  # or just "username" if not domain-based
+                password = self.drive_credential_id.sudo().password
+
                 win32wnet.WNetAddConnection2(0, None, path, None, 'Nated@jhbproperty.co.za', 'Logmein@123', 0)
                 _logger.info(f"Connected  : {self.name}")
                 return True
@@ -76,8 +70,6 @@ class NetworkDrive(models.Model):
                 # raise UserWarning(f"Connection failed: {str(e)}")
 
     def action_refresh_contents(self):
-        if self.require_vpn and self.vpn_configuration_id:
-            self.vpn_configuration_id.connect()
         _logger.info(f"Refreshing contents for drive: {self.name}")
         self.content_ids.unlink()  # Clear existing contents
         if self.file_path:
@@ -132,13 +124,6 @@ class NetworkDriveContent(models.Model):
     path = fields.Char(string='Path', required=False)
     item_type = fields.Selection([('File', 'File'), ('Folder', 'Folder')], string='Type', required=False)
     drive_id = fields.Many2one('network.drive', string='Drive', required=True, ondelete='cascade')
-    vpn_configuration_id = fields.Many2one('vpn.configuration', string='VPN Configuration')
-    require_vpn = fields.Boolean(default=False)
-
-    def _ensure_vpn_connected(self):
-        if self.require_vpn and self.vpn_configuration_id:
-            # Add VPN connection logic here
-            pass
     parent_id = fields.Many2one('network.drive.content', string='Parent', index=True, ondelete='cascade')
     child_ids = fields.One2many('network.drive.content', 'parent_id', string='Children')
     parent_path = fields.Char(index=True)
