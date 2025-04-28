@@ -3,7 +3,7 @@ from odoo import models, fields
 
 class NetworkDriveCredential(models.Model):
     _name = 'drive.credential'
-    _description = 'Network Drive Credential'
+    _description = 'Network Drive Credentials'
     _rec_name = 'drive_letter'
 
     drive_letter = fields.Char(string="Drive Letter", required=True)
