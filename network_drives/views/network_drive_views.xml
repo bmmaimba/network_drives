@@ -41,7 +41,7 @@
                         <group>
                             <field name="file_path" placeholder="e.g., //server/share"/>
                             <field name="is_networkdrive"/>
-                            <field name="driver_credential_id"
+                            <field name="drive_credential_id"
                                    attrs="{'required': [('is_networkdrive', '=', True)],'invisible': [('is_networkdrive', '!=', True)]}"
                                    options="{'no_create': True}"/>
                         </group>

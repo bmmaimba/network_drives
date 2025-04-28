@@ -21,7 +21,7 @@ class NetworkDrive(models.Model):
     allowed_user_ids = fields.Many2many('res.users', string='Allowed Users', help='Users who can access this record.')
     allowed_group_ids = fields.Many2many('res.groups', string='Allowed Groups', help='Groups whose members can access this record.')
     is_networkdrive = fields.Boolean(string="Is Network Drives")
-    driver_credential_id = fields.Many2one('driver.credential', string="Driver Credential")
+    drive_credential_id = fields.Many2one('drive.credential', string="Drive Credentials")
 
     @api.model
     def create(self, vals):
@@ -56,12 +56,12 @@ class NetworkDrive(models.Model):
         for record in self:
             _logger.info("Start _connect_to_share%s:", self.name)
             try:
-                
+
                 _logger.info(f"Initialization net_resource: {self.name}")
                 path = fr'{self.file_path}'
-                username = self.driver_credential_id.sudo().user_name  # or just "username" if not domain-based
-                password = self.driver_credential_id.sudo().password
-                
+                username = self.drive_credential_id.sudo().user_name  # or just "username" if not domain-based
+                password = self.drive_credential_id.sudo().password
+
                 win32wnet.WNetAddConnection2(0, None, path, None, 'Nated@jhbproperty.co.za', 'Logmein@123', 0)
                 _logger.info(f"Connected  : {self.name}")
                 return True
