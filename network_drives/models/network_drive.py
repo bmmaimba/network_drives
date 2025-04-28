@@ -186,4 +186,5 @@ class NetworkDriveContent(models.Model):
             }
         else:
             _logger.error(f"Path does not exist or is not a folder: {self.path}")
+
             return False
