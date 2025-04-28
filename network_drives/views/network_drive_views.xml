@@ -137,5 +137,5 @@
 
     <!-- Submenu for Network Drives -->
     <menuitem id="sub_menu_drive_selection" name="Drive Selection" parent="menu_network_drives" action="action_network_drive" sequence="20"/>
-  
+
 </odoo>

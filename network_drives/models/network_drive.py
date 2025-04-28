@@ -62,7 +62,7 @@ class NetworkDrive(models.Model):
                 username = self.drive_credential_id.sudo().user_name  # or just "username" if not domain-based
                 password = self.drive_credential_id.sudo().password
 
-                win32wnet.WNetAddConnection2(0, None, path, None, 'Nated@jhbproperty.co.za', 'Logmein@123', 0)
+                win32wnet.WNetAddConnection2(0, None, path, None, username, password, 0)
                 _logger.info(f"Connected  : {self.name}")
                 return True
             except Exception as e:
@@ -186,5 +186,4 @@ class NetworkDriveContent(models.Model):
             }
         else:
             _logger.error(f"Path does not exist or is not a folder: {self.path}")
-
             return False
