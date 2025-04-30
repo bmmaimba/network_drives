@@ -8,6 +8,11 @@
             <tree string="Network Drives">
                 <field name="name"/>
                 <field name="file_path"/>
+                <button name="action_open_network_path"
+                        type="object"
+                        string="Open"
+                        icon="fa-external-link"
+                        class="btn-secondary"/>
             </tree>
         </field>
     </record>
@@ -26,6 +31,12 @@
                                 class="oe_stat_button"
                                 icon="fa-refresh">
                             Refresh Contents
+                        </button>
+                        <button name="action_open_network_path"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-external-link">
+                            Open Path
                         </button>
                     </div>
 

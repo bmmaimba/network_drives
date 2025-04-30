@@ -6,6 +6,8 @@ import logging
 from odoo.http import request
 import win32wnet
 import win32netcon
+from odoo.exceptions import UserWarning
+
 _logger = logging.getLogger(__name__)
 
 
@@ -50,6 +52,31 @@ class NetworkDrive(models.Model):
                 if admin_user.id not in [cmd[1] for cmd in vals.get('allowed_user_ids', []) if cmd[0] == 4] + [u.id for u in record.allowed_user_ids]:
                     vals['allowed_user_ids'].append((4, admin_user.id))
         return super(NetworkDrive, self).write(vals)
+
+    def action_open_network_path(self):
+        """Opens the network path in a new browser tab."""
+        self.ensure_one()
+
+        if self.is_networkdrive:
+            self._connect_to_share()
+
+        try:
+            clean_path = self.file_path.replace('file:///', '')
+            clean_path = clean_path.replace('/', '\\')
+
+            if not clean_path.startswith('\\\\'):
+                clean_path = '\\\\' + clean_path.lstrip('\\')
+
+            _logger.info(f"Opening network path: {clean_path}")
+
+            return {
+                'type': 'ir.actions.act_url',
+                'url': f"file:///{clean_path}",
+                'target': 'new',
+            }
+        except Exception as e:
+            _logger.error(f"Failed to open network path: {str(e)}")
+            raise UserWarning(f"Failed to open network path: {str(e)}")
 
     def _connect_to_share(self):
         """Internal method to establish connection"""
