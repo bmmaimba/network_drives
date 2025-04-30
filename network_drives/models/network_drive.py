@@ -6,7 +6,7 @@ import logging
 from odoo.http import request
 import win32wnet
 import win32netcon
-from odoo.exceptions import UserWarning
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class NetworkDrive(models.Model):
             }
         except Exception as e:
             _logger.error(f"Failed to open network path: {str(e)}")
-            raise UserWarning(f"Failed to open network path: {str(e)}")
+            raise UserError(f"Failed to open network path: {str(e)}")
 
     def _connect_to_share(self):
         """Internal method to establish connection"""
