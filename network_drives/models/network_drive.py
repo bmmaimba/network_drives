@@ -69,20 +69,6 @@ class NetworkDrive(models.Model):
                 _logger.info(f"Not Connected : {str(e)}")
                 # raise UserWarning(f"Connection failed: {str(e)}")
 
-    def action_open_drive(self):
-        """Open the network drive path in a new tab"""
-        if self.file_path:
-            if self.is_networkdrive:
-                self._connect_to_share()
-            path = self.file_path.replace('file:///', '')
-            if os.path.exists(path):
-                return {
-                    'type': 'ir.actions.act_url',
-                    'url': f"/folder/open/?path={path}",
-                    'target': 'new',
-                }
-        return False
-
     def action_refresh_contents(self):
         _logger.info(f"Refreshing contents for drive: {self.name}")
         self.content_ids.unlink()  # Clear existing contents
