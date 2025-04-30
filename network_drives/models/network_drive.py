@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 import os
 import zipfile
 import io
@@ -6,7 +7,6 @@ import logging
 from odoo.http import request
 import win32wnet
 import win32netcon
-from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -56,22 +56,18 @@ class NetworkDrive(models.Model):
     def action_open_network_path(self):
         """Opens the network path in a new browser tab."""
         self.ensure_one()
-
         if self.is_networkdrive:
             self._connect_to_share()
-
         try:
             clean_path = self.file_path.replace('file:///', '')
             clean_path = clean_path.replace('/', '\\')
-
             if not clean_path.startswith('\\\\'):
                 clean_path = '\\\\' + clean_path.lstrip('\\')
-
             _logger.info(f"Opening network path: {clean_path}")
 
             return {
                 'type': 'ir.actions.act_url',
-                'url': f"file:///{clean_path}",
+                'url': f"/network/open/?path={clean_path}",
                 'target': 'new',
             }
         except Exception as e:
