@@ -13,35 +13,9 @@ class FileDownloadController(http.Controller):
 
     @http.route('/folder/open/', type='http', auth='user')
     def open_folder(self, path=None, **kwargs):
-        """Open the folders"""
-        """in Windows"""
-        # path = f'file:///{path.replace("\\", "/")}'
-        # path = fr"{path}"
-
-        if not path or not os.path.exists(path):
-            return "<h3>Path not found</h3>"
-
-        if os.path.isfile(path):
-            return http.local_redirect(f"/folder/view/?path={path}")
-
-        entries = []
-        for entry in os.listdir(path):
-            full_path = os.path.join(path, entry)
-            entries.append({
-                'name': entry,
-                'path': full_path,
-                'is_dir': os.path.isdir(full_path),
-            })
-
-        html = f"<h2>📁 Folder: {path}</h2><ul>"
-        for entry in entries:
-            if entry['is_dir']:
-                html += f"<li>📁 <a href='/folder/open/?path={entry['path']}'>{entry['name']}</a></li>"
-            else:
-                html += f"<li>📄 <a href='/folder/view/?path={entry['path']}' target='_blank'>{entry['name']}</a></li>"
-        html += "</ul>"
-
-        return html
+        if path and os.path.exists(path):
+            return request.redirect(f"file://{path}")
+        return request.not_found()
 
     @http.route('/folder/view/', type='http', auth='user')
 

@@ -8,6 +8,10 @@
             <tree string="Network Drives">
                 <field name="name"/>
                 <field name="file_path"/>
+                <button name="action_open_drive"
+                        type="object"
+                        string="Open"
+                        icon="fa-external-link"/>
             </tree>
         </field>
     </record>

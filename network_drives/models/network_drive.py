@@ -13,6 +13,17 @@ class NetworkDrive(models.Model):
     _name = 'network.drive'
     _description = 'Network Drive'
 
+    def action_open_drive(self):
+        import os
+        if os.path.exists(self.file_path):
+            url = f"/folder/open/?path={self.file_path}"
+            return {
+                'type': 'ir.actions.act_url',
+                'url': url,
+                'target': 'new',
+            }
+        return False
+
     name = fields.Char(string='Name', required=True)
     file_path = fields.Char(string='File Path', required=True)
     content_ids = fields.One2many('network.drive.content', 'drive_id', string='Contents')
