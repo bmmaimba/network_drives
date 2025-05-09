@@ -43,38 +43,6 @@ class FileDownloadController(http.Controller):
 
         return html
 
-    @http.route('/network/open/', type='http', auth='user')
-    def open_network_path(self, path=None, **kwargs):
-        if not path:
-            return "<h3>Path not specified</h3>"
-
-        clean_path = path.replace('/', '\\')
-        if not clean_path.startswith('\\\\'):
-            clean_path = '\\\\' + clean_path.lstrip('\\')
-
-        file_url = f"file:///{clean_path}"
-
-        html = f"""
-        <html>
-        <head>
-            <title>Opening Network Path</title>
-            <script type="text/javascript">
-                window.onload = function() {{
-                    window.location.href = "{file_url}";
-                    setTimeout(function() {{
-                        window.close();
-                    }}, 1000);
-                }};
-            </script>
-        </head>
-        <body>
-            <h3>Opening network path: {clean_path}</h3>
-            <p>If the path doesn't open automatically, <a href="{file_url}">click here</a>.</p>
-        </body>
-        </html>
-        """
-        return html
-
     @http.route('/folder/view/', type='http', auth='user')
 
     def view_file(self, path=None, **kwargs):

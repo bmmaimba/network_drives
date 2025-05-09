@@ -8,11 +8,12 @@
             <tree string="Network Drives">
                 <field name="name"/>
                 <field name="file_path"/>
-                <button name="action_open_network_path"
-                        type="object"
-                        string="Open"
-                        icon="fa-external-link"
-                        class="btn-secondary"/>
+                <button name="action_open_drive" 
+                        type="object" 
+                        string="Open" 
+                        icon="fa-external-link"/>
+                <!-- <button name="action_open_drive" type="object" string="Open" icon="fa-external-link">open</button> -->
+
             </tree>
         </field>
     </record>
@@ -31,12 +32,6 @@
                                 class="oe_stat_button"
                                 icon="fa-refresh">
                             Refresh Contents
-                        </button>
-                        <button name="action_open_network_path"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-external-link">
-                            Open Path
                         </button>
                     </div>
 
@@ -92,7 +87,6 @@
                                             attrs="{'invisible': ['|', ('item_type', '!=', 'Folder'), ('has_children', '=', False)]}"/>
                                     <field name="item_type"/>
                                     <field name="name"/>
-                                    <field name="path" attrs="{'invisible': [('display_type', '==', 'line_section')]}"/>
                                     <button name="action_open_folder"
                                             type="object"
                                             string="Open"
@@ -108,6 +102,7 @@
                                             string="Download Folder"
                                             icon="fa-folder"
                                             attrs="{'invisible': [('item_type', '!=', 'Folder')]}"/>
+                                    <field name="path" attrs="{'invisible': [('display_type', '==', 'line_section')]}"/>
                                 </tree>
                             </field>
                         </page>
