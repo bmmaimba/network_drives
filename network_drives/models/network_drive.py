@@ -6,9 +6,8 @@ import logging
 from odoo.http import request
 import win32wnet
 import win32netcon
-from odoo.exceptions import UserError
-
 _logger = logging.getLogger(__name__)
+from odoo.exceptions import RedirectWarning
 
 
 class NetworkDrive(models.Model):
@@ -24,6 +23,25 @@ class NetworkDrive(models.Model):
     allowed_group_ids = fields.Many2many('res.groups', string='Allowed Groups', help='Groups whose members can access this record.')
     is_networkdrive = fields.Boolean(string="Is Network Drives")
     drive_credential_id = fields.Many2one('drive.credential', string="Drive Credentials")
+
+    def action_open_drive(self):
+        """Open the network drive path in a new tab"""
+        if self.file_path:
+            if self.is_networkdrive:
+                self._connect_to_share()
+            path = self.file_path.replace('file:///', '')
+            # return {
+            #         'type': 'ir.actions.act_url',
+            #         'url': 'file:' + self.file_path,
+            #         'target': 'new',  # Open in new tab
+            #     }
+            if os.path.exists(path):
+                return {
+                    'type': 'ir.actions.act_url',
+                    'url': f"/folder/open/?path={path}",
+                    'target': 'new',
+                }
+        return False
 
     @api.model
     def create(self, vals):
@@ -53,31 +71,6 @@ class NetworkDrive(models.Model):
                     vals['allowed_user_ids'].append((4, admin_user.id))
         return super(NetworkDrive, self).write(vals)
 
-    def action_open_network_path(self):
-        """Opens the network path in a new browser tab."""
-        self.ensure_one()
-
-        if self.is_networkdrive:
-            self._connect_to_share()
-
-        try:
-            clean_path = self.file_path.replace('file:///', '')
-            clean_path = clean_path.replace('/', '\\')
-
-            if not clean_path.startswith('\\\\'):
-                clean_path = '\\\\' + clean_path.lstrip('\\')
-
-            _logger.info(f"Opening network path: {clean_path}")
-
-            return {
-                'type': 'ir.actions.act_url',
-                'url': f"file:///{clean_path}",
-                'target': 'new',
-            }
-        except Exception as e:
-            _logger.error(f"Failed to open network path: {str(e)}")
-            raise UserError(f"Failed to open network path: {str(e)}")
-
     def _connect_to_share(self):
         """Internal method to establish connection"""
         for record in self:
@@ -86,10 +79,11 @@ class NetworkDrive(models.Model):
 
                 _logger.info(f"Initialization net_resource: {self.name}")
                 path = fr'{self.file_path}'
-                username = self.drive_credential_id.sudo().user_name  # or just "username" if not domain-based
-                password = self.drive_credential_id.sudo().password
-
-                win32wnet.WNetAddConnection2(0, None, path, None, username, password, 0)
+                username = self.driver_credential_id.sudo().user_name  # or just "username" if not domain-based
+                password = self.driver_credential_id.sudo().password
+                
+                win32wnet.WNetAddConnection2(0, None, path, None, username, password 
+                , 0)
                 _logger.info(f"Connected  : {self.name}")
                 return True
             except Exception as e:
