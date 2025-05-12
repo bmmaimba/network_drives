@@ -1,28 +1,18 @@
 from odoo import models, fields, api
-import os
-import zipfile
-import io
-import logging
-from odoo.http import request
-import win32wnet
-import win32netcon
-_logger = logging.getLogger(__name__)
-from odoo.exceptions import RedirectWarning
-
+from urllib.parse import quote
 
 class NetworkDrive(models.Model):
     _name = 'network.drive'
     _description = 'Network Drive'
 
     name = fields.Char(string='Name', required=True)
-    file_path = fields.Char(string='File Path', required=True)
-    content_ids = fields.One2many('network.drive.content', 'drive_id', string='Contents')
-
-    # Access Rights Fields
-    allowed_user_ids = fields.Many2many('res.users', string='Allowed Users', help='Users who can access this record.')
-    allowed_group_ids = fields.Many2many('res.groups', string='Allowed Groups', help='Groups whose members can access this record.')
-    is_networkdrive = fields.Boolean(string="Is Network Drives")
-    drive_credential_id = fields.Many2one('drive.credential', string="Drive Credentials")
+    file_path = fields.Char(
+        string='Network Path',
+        required=True,
+        help="Enter network path (e.g., \\\\server\\share)"
+    )
+    description = fields.Text(string='Description')
+    active = fields.Boolean(default=True)
 
     def action_open_drive(self):
         """Open the network drive path in a new tab"""
